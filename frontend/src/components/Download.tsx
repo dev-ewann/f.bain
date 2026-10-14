@@ -63,7 +63,7 @@ const Download = () => {
             <p className="text-(--white) font-semibold text-xl break-all">{ filename }</p>
             <p className="text-sm text-(--primary) mb-2.5">{ fileSize }</p>
 
-            <Button onPress={ handleShare } label={ copied ? "Copied!" : "Share" }/>
+            <Button onPress={ handleShare } label={ copied ? "Copied!" : "Share" } secondary={ true }/>
             <Button onPress={ handleDownload } label={ progress.text }/>
             <Button onPress={ handleDelete } label="Delete" dangerous={ true } disabled={ !hasToken }/>
 
