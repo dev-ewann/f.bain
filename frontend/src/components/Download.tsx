@@ -15,6 +15,34 @@ const Download = () => {
 
     const [ errorText, setErrorText ] = useState( "" )
 
+    const [ copied, setCopied ] = useState( false )
+
+    const handleShare = async () => {
+        const link = `${ window.location.origin }${ location.pathname }${ location.hash }`
+
+        try {
+            await navigator.clipboard.writeText( link )
+        } catch {
+            const textarea = document.createElement( "textarea" )
+            textarea.value = link
+            textarea.style.position = "fixed"
+            textarea.style.opacity = "0"
+            document.body.appendChild( textarea )
+            textarea.select()
+            const ok = document.execCommand( "copy" )
+            document.body.removeChild( textarea )
+
+            if ( !ok ) {
+                setErrorText( "Could not copy link" )
+                return
+            }
+        }
+
+        setErrorText( "" )
+        setCopied( true )
+        setTimeout( () => setCopied( false ), 2000 )
+    }
+
     const handleDelete = async () => {
         if ( !uuid ) return
         if ( !window.confirm( "Are you sure ?" ) ) return
@@ -35,6 +63,7 @@ const Download = () => {
             <p className="text-(--white) font-semibold text-xl break-all">{ filename }</p>
             <p className="text-sm text-(--primary) mb-2.5">{ fileSize }</p>
 
+            <Button onPress={ handleShare } label={ copied ? "Copied!" : "Share" }/>
             <Button onPress={ handleDownload } label={ progress.text }/>
             <Button onPress={ handleDelete } label="Delete" dangerous={ true } disabled={ !hasToken }/>
 
