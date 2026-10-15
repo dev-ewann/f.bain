@@ -64,3 +64,16 @@ html, body, #root {
     color: var(--primary);
     font-family: "SNPro", sans-serif;
 }
+
+img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}

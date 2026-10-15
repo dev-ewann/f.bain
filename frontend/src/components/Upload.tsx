@@ -25,11 +25,12 @@ const Upload = () => {
         }
     }, [] )
 
-    const handleFile = (file: File) => {
-        if ( file.size >= maxFileSize ) {
-            setStatus( "error" )
-            setProgress( { status: "error", text: "The file is too large", progress: 1 } )
+    const handleFiles = (files: File[]) => {
+        const total = files.reduce( (sum, f) => sum + f.size, 0 )
 
+        if ( total >= maxFileSize ) {
+            setStatus( "error" )
+            setProgress( { status: "error", text: "The files are too large", progress: 1 } )
             return
         }
 
@@ -69,32 +70,30 @@ const Upload = () => {
             }
         };
 
-        worker.postMessage( { file, keyLength: KEY_STRENGTH } )
+        worker.postMessage( { files, keyLength: KEY_STRENGTH } )
     }
 
     const onFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if ( file ) void handleFile( file );
+        const files = Array.from( e.target.files ?? [] )
+        if ( files.length ) handleFiles( files )
     }
 
     const onDrop = (e: React.DragEvent) => {
-        e.preventDefault();
-
-        const file = e.dataTransfer.items ? e.dataTransfer.items[0].getAsFile() : e.dataTransfer.files[0];
-
-        if ( file ) void handleFile( file );
+        e.preventDefault()
+        const files = Array.from( e.dataTransfer.files )
+        if ( files.length ) handleFiles( files )
     }
 
     const progressColor = status === "error" ? "bg-(--error)" : status === "success" ? "bg-(--success)" : "bg-(--white)"
 
     return (
         <div
-            className={ "relative w-full h-screen" + status === "idle" ? "cursor-pointer" : "" }
+            className={`relative w-full h-screen ${status === "idle" ? "cursor-pointer" : ""}`}
             onDragOver={ (e) => e.preventDefault() }
             onDrop={ onDrop }
             onClick={ () => status === "idle" && inputRef.current?.click() }
         >
-            <input ref={ inputRef } type="file" className="hidden" onChange={ onFileInput }/>
+            <input ref={ inputRef } type="file" multiple className="hidden" onChange={ onFileInput }/>
 
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
                 { status === "idle" && (
